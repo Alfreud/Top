@@ -1,6 +1,8 @@
 package com.alfred0ga.top;
 
 public class Artista {
+    public static final String ORDEN = "orden";
+
     private long id;
     private String nombre;
     private String apellidos;
@@ -97,6 +99,10 @@ public class Artista {
 
     public void setFotoUrl(String fotoUrl) {
         this.fotoUrl = fotoUrl;
+    }
+
+    public String getNombreCompleto() {
+        return this.nombre + " " + this.apellidos;
     }
 
     @Override
