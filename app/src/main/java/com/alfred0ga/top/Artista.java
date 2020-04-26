@@ -1,19 +1,47 @@
 package com.alfred0ga.top;
 
-public class Artista {
-    public static final String ORDEN = "orden";
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
+import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
+@Table(database = TopDB.class)
+public class Artista extends BaseModel {
+    public static final String ORDEN = "orden";
+    public static final String ID = "id";
+
+    @PrimaryKey(autoincrement = true)
     private long id;
+    @Column
     private String nombre;
+    @Column
     private String apellidos;
+    @Column
     private long fechaNacimiento;
+    @Column
     private String lugarNacimiento;
+    @Column
     private short estatura;
+    @Column
     private String notas;
+    @Column
     private int orden;
+    @Column
     private String fotoUrl;
 
     public Artista() {
+    }
+
+    public Artista(String nombre, String apellidos, long fechaNacimiento, String lugarNacimiento,
+                   short estatura, String notas, int orden, String fotoUrl) {
+        this.nombre = nombre;
+        this.apellidos = apellidos;
+        this.fechaNacimiento = fechaNacimiento;
+        this.lugarNacimiento = lugarNacimiento;
+        this.estatura = estatura;
+        this.notas = notas;
+        this.orden = orden;
+        this.fotoUrl = fotoUrl;
     }
 
     public Artista(long id, String nombre, String apellidos, long fechaNacimiento,

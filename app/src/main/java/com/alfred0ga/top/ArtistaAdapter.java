@@ -76,6 +76,18 @@ public class ArtistaAdapter extends RecyclerView.Adapter<ArtistaAdapter.ViewHold
         }
     }
 
+    public void setList(List<Artista> artistasFromDB) {
+        this.artistas = artistasFromDB;
+        notifyDataSetChanged();
+    }
+
+    public void remove(Artista artista) {
+        if (artistas.contains(artista)){
+            artistas.remove(artista);
+            notifyDataSetChanged();
+        }
+    }
+
     class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.imgPhoto)
         ImageView imgPhoto;

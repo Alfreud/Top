@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -31,6 +33,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class AddArtistActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
+    private static final int RC_PHOTO_PICKER = 21;
 
     @BindView(R.id.imgFoto)
     AppCompatImageView imgFoto;
@@ -101,23 +104,29 @@ public class AddArtistActivity extends AppCompatActivity implements DatePickerDi
         return super.onOptionsItemSelected(item);
     }
 
-    private void saveArtist() {/*
-        mArtista.setNombre(etNombre.getText().toString().trim());
-        mArtista.setApellidos(etApellidos.getText().toString().trim());
-        mArtista.setEstatura(Short.valueOf(etEstatura.getText().toString().trim()));
-        mArtista.setLugarNacimiento(etlugarNacimiento.getText().toString().trim());
-        mArtista.setNotas(etNotas.getText().toString().trim());*/
-
+    private void saveArtist() {
         if(validateFields()){
-            MainActivity.sArtista.setNombre(etNombre.getText().toString().trim());
+            mArtista.setNombre(etNombre.getText().toString().trim());
+            mArtista.setApellidos(etApellidos.getText().toString().trim());
+            mArtista.setEstatura(Short.valueOf(etEstatura.getText().toString().trim()));
+            mArtista.setLugarNacimiento(etlugarNacimiento.getText().toString().trim());
+            mArtista.setNotas(etNotas.getText().toString().trim());
+            try {
+                mArtista.save();
+                Log.i("DBFlow", "Inserción correcta de datos");
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+            /*MainActivity.sArtista.setNombre(etNombre.getText().toString().trim());
             MainActivity.sArtista.setApellidos(etApellidos.getText().toString().trim());
             MainActivity.sArtista.setEstatura(Short.valueOf(etEstatura.getText().toString().trim()));
             MainActivity.sArtista.setLugarNacimiento(etlugarNacimiento.getText().toString().trim());
             MainActivity.sArtista.setNotas(etNotas.getText().toString().trim());
             MainActivity.sArtista.setOrden(mArtista.getOrden());
             MainActivity.sArtista.setFotoUrl(mArtista.getFotoUrl());
-
-            setResult(RESULT_OK);
+*/
+            //setResult(RESULT_OK);
             finish();
         }
     }
@@ -143,6 +152,18 @@ public class AddArtistActivity extends AppCompatActivity implements DatePickerDi
         }
 
         return isValid;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK){
+            switch (requestCode){
+                case RC_PHOTO_PICKER:
+                    configImageView(data.getDataString());
+                    break;
+            }
+        }
     }
 
     @OnClick(R.id.etFechaNacimiento)
@@ -172,8 +193,26 @@ public class AddArtistActivity extends AppCompatActivity implements DatePickerDi
     public void imageEvents(View view) {
         switch (view.getId()) {
             case R.id.imgDeleteFoto:
+                AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                        .setTitle(R.string.detalle_dialogDelete_title)
+                        .setMessage(String.format(Locale.ROOT,
+                                getString(R.string.detalle_dialogDelete_message),
+                                mArtista.getNombreCompleto()))
+                        .setPositiveButton(R.string.label_dialog_delete, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                configImageView(null);
+                            }
+                        })
+                        .setNegativeButton(R.string.label_dialog_cancel, null);
+                builder.show();
                 break;
             case R.id.imgFromGallery:
+                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+                i.setType("image/jpeg");
+                i.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+                startActivityForResult(Intent.createChooser(i,
+                        getString(R.string.detalle_chooser_title)), RC_PHOTO_PICKER);
                 break;
             case R.id.imgFromUrl:
                 showAddPhotoDialog();

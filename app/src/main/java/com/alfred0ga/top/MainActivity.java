@@ -1,18 +1,27 @@
 package com.alfred0ga.top;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Vibrator;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.snackbar.Snackbar;
+import com.raizlabs.android.dbflow.sql.language.SQLite;
+
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -29,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
 
     private ArtistaAdapter adapter;
 
-    public static final Artista sArtista = new Artista();
+    //public static final Artista sArtista = new Artista();
 
 
     @Override
@@ -42,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         configAdapter();
         configRecyclerView();
 
-        generateArtist();
+        //generateArtist();
     }
 
     private void generateArtist() {
@@ -64,9 +73,15 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
                 "https://upload.wikimedia.org/wikipedia/commons/3/3d/Miley_Cyrus_at_the_2009_Academy_Awards_04_new.jpg"
         };
         for (int i = 0; i < 4; i++) {
-            Artista artista = new Artista(i + 1, nombres[i], apellidos[i], nacimientos[i],
+            Artista artista = new Artista(nombres[i], apellidos[i], nacimientos[i],
                     lugares[i], estaturas[i], notas[i], i + 1, fotos[i]);
-            adapter.add(artista);
+            //adapter.add(artista);
+            try {
+                artista.save();
+                Log.i("DBFlow","Inserción correcta de datos.");
+            }catch (Exception e){
+                Log.i("DBFlow","Error al insertar datos");
+            }
         }
     }
 
@@ -81,6 +96,20 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
     private void configRecyclerView() {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        adapter.setList(getArtistasFromDB());
+    }
+
+    private List<Artista> getArtistasFromDB() {
+        return SQLite
+                .select()
+                .from(Artista.class)
+                .orderBy(Artista_Table.orden, true)
+                .queryList();
     }
 
     @Override
@@ -111,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
      * */
     @Override
     public void onItemClick(Artista artista) {
-        sArtista.setId(artista.getId());
+        /*sArtista.setId(artista.getId());
         sArtista.setNombre(artista.getNombre());
         sArtista.setApellidos(artista.getApellidos());
         sArtista.setFechaNacimiento(artista.getFechaNacimiento());
@@ -120,23 +149,46 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         sArtista.setOrden(artista.getOrden());
         sArtista.setNotas(artista.getNotas());
         sArtista.setFotoUrl(artista.getFotoUrl());
-
+*/
         Intent i = new Intent(MainActivity.this, DetalleActivity.class);
+        i.putExtra(Artista.ID, artista.getId());
         startActivity(i);
     }
 
     @Override
     public void onLongItemClick(Artista artista) {
-
+        Vibrator vibrator  = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
+        if (vibrator != null){
+            vibrator.vibrate(60);
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                .setTitle(R.string.main_dialogDelete_title)
+                .setMessage(String.format(Locale.ROOT, getString(R.string.main_dialogDelete_message),
+                        artista.getNombreCompleto()))
+                .setPositiveButton(R.string.label_dialog_delete, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        try {
+                            artista.delete();
+                            adapter.remove(artista);
+                            showMessage(R.string.main_message_delete_success);
+                        }catch (Exception e){
+                            e.printStackTrace();
+                            showMessage(R.string.main_message_delete_fail);
+                        }
+                    }
+                })
+                .setNegativeButton(R.string.label_dialog_cancel, null);
+        builder.show();
     }
 
-    @Override
+/*    @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == RESULT_OK && requestCode == 1){
             adapter.add(sArtista);
         }
-    }
+    }*/
 
     @OnClick(R.id.fab)
     public void addArtist() {
@@ -144,5 +196,9 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         intent.putExtra(Artista.ORDEN, adapter.getItemCount() + 1);
         //startActivity(intent);
         startActivityForResult(intent, 1);
+    }
+
+    private void showMessage(int resource) {
+        Snackbar.make(containerMain, resource, Snackbar.LENGTH_SHORT).show();
     }
 }
