@@ -17,12 +17,14 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -49,6 +51,14 @@ public class AddArtistActivity extends AppCompatActivity implements DatePickerDi
     TextInputEditText etlugarNacimiento;
     @BindView(R.id.etNotas)
     TextInputEditText etNotas;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
+    @BindView(R.id.tilNombre)
+    TextInputLayout tilNombre;
+    @BindView(R.id.tilApellidos)
+    TextInputLayout tilApellidos;
+    @BindView(R.id.tilEstatura)
+    TextInputLayout tilEstatura;
 
     private Artista mArtista;
     private Calendar mCalendar;
@@ -66,6 +76,7 @@ public class AddArtistActivity extends AppCompatActivity implements DatePickerDi
     }
 
     private void configActionBar() {
+        setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -105,7 +116,7 @@ public class AddArtistActivity extends AppCompatActivity implements DatePickerDi
     }
 
     private void saveArtist() {
-        if(validateFields()){
+        if (validateFields()) {
             mArtista.setNombre(etNombre.getText().toString().trim());
             mArtista.setApellidos(etApellidos.getText().toString().trim());
             mArtista.setEstatura(Short.valueOf(etEstatura.getText().toString().trim()));
@@ -114,7 +125,7 @@ public class AddArtistActivity extends AppCompatActivity implements DatePickerDi
             try {
                 mArtista.save();
                 Log.i("DBFlow", "Inserción correcta de datos");
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
@@ -134,21 +145,30 @@ public class AddArtistActivity extends AppCompatActivity implements DatePickerDi
     private boolean validateFields() {
         boolean isValid = true;
 
-        if(etEstatura.getText().toString().trim().isEmpty() ||
-                Integer.valueOf(etEstatura.getText().toString().trim()) < getResources().getInteger(R.integer.estatura_min)){
-            etEstatura.setError(getString(R.string.addArtist_error_estaturaMin));
-            etEstatura.requestFocus();
+        if (etEstatura.getText().toString().trim().isEmpty() ||
+                Integer.valueOf(etEstatura.getText().toString().trim()) < getResources().getInteger(R.integer.estatura_min)) {
+            tilEstatura.setError(getString(R.string.addArtist_error_estaturaMin));
+            tilEstatura.requestFocus();
             isValid = false;
+        }else{
+            tilEstatura.setError(null);
         }
-        if(etApellidos.getText().toString().trim().isEmpty()){
-            etApellidos.setError(getString(R.string.addArtist_error_required));
-            etApellidos.requestFocus();
+
+        if (etApellidos.getText().toString().trim().isEmpty()) {
+            tilApellidos.setError(getString(R.string.addArtist_error_required));
+            tilApellidos.requestFocus();
             isValid = false;
+        }else{
+            tilApellidos.setError(null);
         }
-        if(etNombre.getText().toString().trim().isEmpty()){
-            etNombre.setError(getString(R.string.addArtist_error_required));
-            etNombre.requestFocus();
+
+        if (etNombre.getText().toString().trim().isEmpty()) {
+            //etNombre.setError(getString(R.string.addArtist_error_required));
+            tilNombre.setError(getString(R.string.addArtist_error_required));
+            tilNombre.requestFocus();
             isValid = false;
+        }else{
+            tilNombre.setError(null);
         }
 
         return isValid;
@@ -157,8 +177,8 @@ public class AddArtistActivity extends AppCompatActivity implements DatePickerDi
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK){
-            switch (requestCode){
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
                 case RC_PHOTO_PICKER:
                     configImageView(data.getDataString());
                     break;
@@ -237,7 +257,7 @@ public class AddArtistActivity extends AppCompatActivity implements DatePickerDi
     }
 
     private void configImageView(String fotoUrl) {
-        if(fotoUrl != null){
+        if (fotoUrl != null) {
             RequestOptions options = new RequestOptions();
             options.diskCacheStrategy(DiskCacheStrategy.ALL)
                     .centerCrop();
@@ -246,7 +266,7 @@ public class AddArtistActivity extends AppCompatActivity implements DatePickerDi
                     .load(fotoUrl)
                     .apply(options)
                     .into(imgFoto);
-        }else{
+        } else {
             imgFoto.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_photo_size_select_actual));
         }
 

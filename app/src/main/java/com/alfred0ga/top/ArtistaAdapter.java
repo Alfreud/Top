@@ -9,6 +9,7 @@ import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatTextView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,6 +21,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ArtistaAdapter extends RecyclerView.Adapter<ArtistaAdapter.ViewHolder> {
     private List<Artista> artistas;
@@ -47,6 +49,7 @@ public class ArtistaAdapter extends RecyclerView.Adapter<ArtistaAdapter.ViewHold
         holder.setListener(artista, listener);
 
         holder.tvNombre.setText(artista.getNombreCompleto());
+        holder.tvNotes.setText(artista.getNotas());
         holder.tvOrden.setText(String.valueOf(artista.getOrden()));
 
         if(artista.getFotoUrl() != null){
@@ -90,13 +93,15 @@ public class ArtistaAdapter extends RecyclerView.Adapter<ArtistaAdapter.ViewHold
 
     class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.imgPhoto)
-        ImageView imgPhoto;
+        CircleImageView imgPhoto;
         @BindView(R.id.tvNombre)
         AppCompatTextView tvNombre;
+        @BindView(R.id.tvNotes)
+        AppCompatTextView tvNotes;
         @BindView(R.id.tvOrden)
         AppCompatTextView tvOrden;
         @BindView(R.id.containerMain)
-        RelativeLayout containerMain;
+        ConstraintLayout containerMain;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
