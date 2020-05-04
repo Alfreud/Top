@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -37,7 +37,7 @@
     </style>
 
     <style name="ItemMedium" parent="TextAppearance.MaterialComponents.Body1">
-        <item name="maxLines">2</item>
+        <item name="android:maxLines">2</item>
         <item name="android:textColor">?android:attr/textColorSecondary</item>
     </style>
 
@@ -46,6 +46,32 @@
         <item name="android:layout_marginStart">@dimen/item_padding_horizontal</item>
         <item name="android:layout_marginEnd">@dimen/item_padding_horizontal</item>
         <item name="android:layout_marginTop">@dimen/item_padding_vertical</item>
+    </style>
+
+<!--    Pickers-->
+    <style name="PickerDialogCut" parent="BasePickerDialogCut">
+
+    </style>
+
+    <style name="BasePickerDialogCut" parent="ThemeOverlay.MaterialComponents.MaterialCalendar">
+        <item name="materialCalendarHeaderLayout">@null</item>
+    </style>
+
+<!--    Alert Dialog-->
+    <style name="MyMaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="colorPrimary">@color/color_primary_variant</item>
+    </style>
+    
+    <style name="Splash" parent="BaseSplash">
+
+    </style>
+
+    <style name="BaseSplash" parent="MyTheme.DayNight">
+        <item name="android:windowBackground">@drawable/background_splash</item>
+        <item name="android:statusBarColor">?colorSecondary</item>
+
+        <item name="android:navigationBarColor">?colorSecondary</item>
+        <item name="android:windowLightNavigationBar" tools:ignore="NewApi">false</item>
     </style>
 
 </resources>

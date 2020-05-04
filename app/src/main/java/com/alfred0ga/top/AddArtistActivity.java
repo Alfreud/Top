@@ -1,6 +1,5 @@
 package com.alfred0ga.top;
 
-import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,13 +7,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.DatePicker;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.appcompat.widget.Toolbar;
@@ -23,18 +20,19 @@ import androidx.core.content.ContextCompat;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.material.datepicker.MaterialDatePicker;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class AddArtistActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
+public class AddArtistActivity extends AppCompatActivity {
     private static final int RC_PHOTO_PICKER = 21;
 
     @BindView(R.id.imgFoto)
@@ -61,8 +59,6 @@ public class AddArtistActivity extends AppCompatActivity implements DatePickerDi
     TextInputLayout tilEstatura;
 
     private Artista mArtista;
-    private Calendar mCalendar;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,10 +86,8 @@ public class AddArtistActivity extends AppCompatActivity implements DatePickerDi
     }
 
     private void configCalendar() {
-        mCalendar = Calendar.getInstance(Locale.ROOT);
         etFechaNacimiento.setText(new SimpleDateFormat("dd/MM/yyyy", Locale.ROOT).format(
                 System.currentTimeMillis()));
-
     }
 
     @Override
@@ -188,32 +182,24 @@ public class AddArtistActivity extends AppCompatActivity implements DatePickerDi
 
     @OnClick(R.id.etFechaNacimiento)
     public void onSetFecha() {
-        DialogSelectorFecha selectorFecha = new DialogSelectorFecha();
-        selectorFecha.setListener(AddArtistActivity.this);
+        MaterialDatePicker.Builder<Long> builder = MaterialDatePicker.Builder.datePicker();
+        builder.setTheme(R.style.PickerDialogCut);
 
-        Bundle args = new Bundle();
-        args.putLong(DialogSelectorFecha.FECHA, mArtista.getFechaNacimiento());
-        selectorFecha.setArguments(args);
-        selectorFecha.show(getSupportFragmentManager(), DialogSelectorFecha.SELECTED_DATE);
-    }
-
-    @Override
-    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-        mCalendar.setTimeInMillis(System.currentTimeMillis());
-        mCalendar.set(Calendar.YEAR, year);
-        mCalendar.set(Calendar.MONTH, month);
-        mCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-
-        etFechaNacimiento.setText(new SimpleDateFormat("dd/MM/yyyy", Locale.ROOT).format(
-                mCalendar.getTimeInMillis()));
-        mArtista.setFechaNacimiento(mCalendar.getTimeInMillis());
+        MaterialDatePicker<?> picker = builder.build();
+        picker.addOnPositiveButtonClickListener(selection -> {
+            etFechaNacimiento.setText(new SimpleDateFormat("dd/MM/yyyy", Locale.ROOT)
+                    .format(selection));
+            mArtista.setFechaNacimiento((Long) selection);
+        });
+        picker.show(getSupportFragmentManager(), picker.toString());
     }
 
     @OnClick({R.id.imgDeleteFoto, R.id.imgFromGallery, R.id.imgFromUrl})
     public void imageEvents(View view) {
         switch (view.getId()) {
             case R.id.imgDeleteFoto:
-                AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                //AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this)
                         .setTitle(R.string.detalle_dialogDelete_title)
                         .setMessage(String.format(Locale.ROOT,
                                 getString(R.string.detalle_dialogDelete_message),
@@ -243,7 +229,8 @@ public class AddArtistActivity extends AppCompatActivity implements DatePickerDi
     private void showAddPhotoDialog() {
         final EditText etFotoUrl = new EditText(this);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+        //AlertDialog.Builder builder = new AlertDialog.Builder(this)
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this)
                 .setTitle(R.string.addArtist_dialogUrl_title)
                 .setPositiveButton(R.string.label_dialog_add, new DialogInterface.OnClickListener() {
                     @Override

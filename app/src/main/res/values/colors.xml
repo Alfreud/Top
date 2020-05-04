@@ -22,4 +22,10 @@
     <color name="color_on_error">#ffffff</color>
 
     <color name="color_divider">#1e000000</color>
+
+<!--    CollapsingToolbarLayout-->
+    <color name="color_collapsing_toolbar_layout">@color/color_primary</color>
+
+<!--    Splash-->
+    <color name="ic_launcher_background">#424242</color>
 </resources>
