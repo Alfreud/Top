@@ -1,5 +1,6 @@
 package com.alfred0ga.top;
 
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -7,10 +8,11 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
@@ -200,20 +202,23 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
      *   OnItemClickListener Interface
      * */
     @Override
-    public void onItemClick(Artista artista) {
-        /*sArtista.setId(artista.getId());
-        sArtista.setNombre(artista.getNombre());
-        sArtista.setApellidos(artista.getApellidos());
-        sArtista.setFechaNacimiento(artista.getFechaNacimiento());
-        sArtista.setEstatura(artista.getEstatura());
-        sArtista.setLugarNacimiento(artista.getLugarNacimiento());
-        sArtista.setOrden(artista.getOrden());
-        sArtista.setNotas(artista.getNotas());
-        sArtista.setFotoUrl(artista.getFotoUrl());
-*/
+    //public void onItemClick(Artista artista) {
+    //public void onItemClick(Artista artista, View view) {
+    public void onItemClick(Artista artista, View imgPhoto, View tvName) {
         Intent i = new Intent(MainActivity.this, DetalleActivity.class);
         i.putExtra(Artista.ID, artista.getId());
-        startActivity(i);
+
+        Pair<View, String> imgPair = Pair.create(imgPhoto, imgPhoto.getTransitionName());
+        /*Pair<View, String> notePair = Pair.create(tvNote, tvNote.getTransitionName());
+        Pair<View, String> orderPair = Pair.create(tvOrder, tvOrder.getTransitionName());*/
+        Pair<View, String> namePair = Pair.create(tvName, tvName.getTransitionName());
+        //startActivity(i);
+        //startActivity(i, ActivityOptions.makeSceneTransitionAnimation(this).toBundle());
+        /*ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this, view,
+                getString(R.string.tn_photo));*/
+        ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(this,
+                imgPair, namePair);
+        startActivity(i, options.toBundle());
     }
 
     @Override
@@ -258,7 +263,10 @@ public class MainActivity extends AppCompatActivity implements OnItemClickListen
         Intent intent = new Intent(MainActivity.this, AddArtistActivity.class);
         intent.putExtra(Artista.ORDEN, adapter.getItemCount() + 1);
         //startActivity(intent);
-        startActivityForResult(intent, 1);
+        //startActivityForResult(intent, 1);
+        startActivityForResult(intent, 1, ActivityOptions.makeSceneTransitionAnimation(
+                this).toBundle());
+
     }
 
     private void showMessage(int resource) {

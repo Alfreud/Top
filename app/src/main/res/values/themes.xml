@@ -25,6 +25,27 @@
 
 <!--        Custom Components Style -->
         <item name="materialAlertDialogTheme">@style/MyMaterialAlertDialog</item>
+        
+<!--        Transitions-->
+
+        <!--<item name="android:windowEnterTransition">@transition/fade_in</item>
+        <item name="android:windowExitTransition">@transition/fade_out</item>-->
+
+        <item name="android:windowEnterTransition">@transition/transition_enter_se</item>
+        <item name="android:windowExitTransition">@transition/transition_exit</item>
+
+        <!--<item name="android:windowEnterTransition">@transition/slide_end</item>
+        <item name="android:windowExitTransition">@transition/fade_in</item>-->
+
+        <!--<item name="android:windowEnterTransition">@transition/explode</item>
+        <item name="android:windowExitTransition">@transition/explode</item>-->
+
+        <!--<item name="android:windowEnterTransition">@transition/transition_enter_alt</item>
+        <item name="android:windowExitTransition">@transition/fade</item>-->
+        
+        <item name="android:windowSharedElementEnterTransition">@transition/share_elements</item>
+        <item name="android:windowSharedElementExitTransition">@transition/share_elements</item>
+
     </style>
     
     <style name="Base.MaterialThemeBuilder" parent="Theme.MaterialComponents.DayNight.NoActionBar">
